@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Compare Costs of Orders</title>
+</head>
+<body>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .order {
+            margin: 10px;
+            width: 420px;
+            padding: 10px;
+            float: left;
+            border: 1px solid gray;
+        }
+        table {
+            padding: 0;
+            border-collapse: collapse;            
+        }
+        td {
+            padding: 0;
+        }
+        table.summary {
+            margin-top: 50px
+        }
+        .add-row {
+            color: green;
+            margin-top: 10px;
+        }
+        .item-template, .order-template {
+            display: none;
+        }
+        .error {
+            background-color: lightpink;
+        }
+
+
+    </style>
+    <h1 contenteditable="true">Compare Prices accross shopps <button onclick="addOrder()">Add order</button></h1>
+    
+    <div class="order-template">
+        <h2 class="title" contenteditable="true">Order 1</h2>
+        <table class="item-list">
+            <tr class="item-header">
+                <td style="width: 50px">Count</td>
+                <td style="width: 300px">Title</td>
+                <td style="width: 50px">Price</td>
+            </tr>
+            <tr class="item-template">
+                    <td><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
+                    <td><input type="text" name="title" class="title" style="width: 100%"></td>
+                    <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
+            </tr>
+            <tr class="item">
+                <td><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
+                <td><input type="text" name="title" class="title" style="width: 100%"></td>
+                <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
+            </tr>
+            <tr class="item">
+                <td><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
+                <td><input type="text" name="title" class="title" style="width: 100%"></td>
+                <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
+            </tr>
+        </table>
+        <button class="add-row" onclick="addRow(this)">Add row</button>
+        <table class="summary">
+            <tr>
+                <td style="width: 350px">Shipping</td>
+                <td style="width: 50px"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="shipping" class="shipping" value="0" style="width: 100%" onkeyup="calculate(this)"></td>
+            </tr>
+            <tr>
+                <td>Free shipping above price</td>
+                <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="free-shipping" class="free-shipping" value="0" style="width: 100%" onkeyup="calculate(this)"></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td class="total"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+
+        function readNumberOrSetError(el) {
+            let val = + el.value
+            if ( Number.isNaN(val) || val < 0 ) {
+                el.classList.add('error');
+                return -1;
+            }
+            return val
+        }
+
+        function findOrderParentClass(el) {
+            let parent = el.parentElement;
+            while(parent.tagName.toUpperCase() != 'DIV') {
+                parent = parent.parentElement;
+            }
+            let prefix = '';
+            parent.classList.forEach(c => {
+                if (c.startsWith('order-')) {
+                    prefix = c;
+                }
+            });
+            if (prefix != '') {
+                return prefix
+            }
+            console.log('Tings are fishy, trying recursion...')
+            return findOrderParent(parent)
+        }
+
+        function calculate(el) {
+            let parentSelector = '.' + findOrderParentClass(el) + ' ';
+            let oldErrors = document.querySelectorAll(parentSelector + '.error').forEach( e => e.classList.remove('error'));
+            let total = 0;
+            let items = document.querySelectorAll(parentSelector + 'tr.item');
+            items.forEach( (i) => {
+                let count = readNumberOrSetError(i.querySelector('.count'));
+                let price = readNumberOrSetError(i.querySelector('.price'));
+                if (count > 0 && price > 0) {
+                    total += count * price;
+                }
+            });
+
+            let shipping = readNumberOrSetError(document.querySelector(parentSelector + 'input.shipping'));
+            let freeShipping = readNumberOrSetError(document.querySelector(parentSelector + 'input.free-shipping'));
+            console.log(total)
+            if (shipping > 0 && (freeShipping <= 0 || total < freeShipping)) {
+                total += shipping;
+            }
+            document.querySelector(parentSelector + 'td.total').textContent = total.toFixed(2);
+        }
+
+        function addRow(el) {
+            let parentSelector = '.' + findOrderParentClass(el) + ' ';
+            let list = document.querySelector(parentSelector + '.item-list');
+            let template = document.querySelector(parentSelector + '.item-template');
+            let newRow = template.cloneNode(true);
+            newRow.setAttribute('class', 'item');
+            list.appendChild(newRow);
+        }
+
+        function addOrder() {
+            let orderTemplate = document.querySelector('.order-template');
+            let orderEl = orderTemplate.cloneNode(true);
+            orderEl.classList = 'order order-' + window.nextOrderNr;
+            orderEl.querySelector('h2').textContent = 'Order ' + window.nextOrderNr;
+            window.nextOrderNr++;
+            document.querySelector('body').appendChild(orderEl);
+        }
+
+        // INIT
+        window.nextOrderNr = 0;
+        addOrder();
+    </script>
+</body>
+</html>
