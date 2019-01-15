@@ -13,7 +13,7 @@
         }
         .order {
             margin: 10px;
-            width: 420px;
+            max-width: 420px;
             padding: 10px;
             float: left;
             border: 1px solid gray;
@@ -26,11 +26,20 @@
             padding: 0;
         }
         table.summary {
-            margin-top: 50px
+            margin-top: 50px;
+        }
+        table.summary, table.item-list {
+            width: 100%;
         }
         .add-row {
             color: green;
-            margin-top: 10px;
+            margin-top: 25px;
+        }
+        h1, h2 {
+            margin: 20px 0;
+        }
+        .add-order {
+            margin: 32px 0;
         }
         .item-template, .order-template {
             display: none;
@@ -38,48 +47,81 @@
         .error {
             background-color: lightpink;
         }
-
-
+        .in-short {
+            width: 50px;
+        }
+        .in-long {
+            min-width: 250px;
+            max-width: 400px;
+        }
+        .clearfix::after {
+            display: block;
+            content: "";
+            clear: both;
+        }
+        .left {
+            float: left;
+        }
+        .right {
+            float: right;
+        }
+        .mw600 {
+            max-width: 600px;
+        }
+        @media (max-width: 450px) {
+            h1 {
+                margin-bottom: 5px;
+            }
+            .add-order {
+                margin-top: 0;
+            }
+        }
     </style>
-    <h1 contenteditable="true">Compare Prices accross shopps <button onclick="addOrder()">Add order</button></h1>
+    <div class="clearfix mw600">
+        <h1 class="left" contenteditable="true">Compare Prices accross shopps</h1>
+        <button class="add-order right" onclick="addOrder()">Add order</button>
+    </div>
     
     <div class="order-template">
-        <h2 class="title" contenteditable="true">Order 1</h2>
+        <div class="clearfix">
+            <h2 class="left" class="title" contenteditable="true">Order 1 </h2>
+            <button class="add-row right" onclick="addRow(this)">Add row</button>        
+        </div>
         <table class="item-list">
             <tr class="item-header">
-                <td style="width: 50px">Count</td>
-                <td style="width: 300px">Title</td>
-                <td style="width: 50px">Price</td>
+                <td class="in-short">Count</td>
+                <td class="in-long">Title</td>
+                <td class="in-short">Price</td>
             </tr>
             <tr class="item-template">
-                    <td><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
-                    <td><input type="text" name="title" class="title" style="width: 100%"></td>
-                    <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
+                    <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
+                    <td class="in-long"><input type="text" name="title" class="title" style="width: 100%"></td>
+                    <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
             </tr>
             <tr class="item">
-                <td><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
-                <td><input type="text" name="title" class="title" style="width: 100%"></td>
-                <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
+                <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
+                <td class="in-long"><input type="text" name="title" class="title" style="width: 100%"></td>
+                <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
             </tr>
             <tr class="item">
-                <td><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
-                <td><input type="text" name="title" class="title" style="width: 100%"></td>
-                <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
+                <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+" name="count" class="count" style="width: 100%" onkeyup="calculate(this)" value="1"></td>
+                <td class="in-long"><input type="text" name="title" class="title" style="width: 100%"></td>
+                <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="price" class="price" style="width: 100%" onkeyup="calculate(this)"></td>
             </tr>
         </table>
-        <button class="add-row" onclick="addRow(this)">Add row</button>
+
         <table class="summary">
             <tr>
-                <td style="width: 350px">Shipping</td>
-                <td style="width: 50px"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="shipping" class="shipping" value="0" style="width: 100%" onkeyup="calculate(this)"></td>
+                <td class="in-long">Shipping</td>
+                <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="shipping" class="shipping" value="0" style="width: 100%" onkeyup="calculate(this)"></td>
             </tr>
             <tr>
-                <td>Free shipping above price</td>
-                <td><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="free-shipping" class="free-shipping" value="0" style="width: 100%" onkeyup="calculate(this)"></td>
+                <td class="in-long">Free shipping above price</td>
+                <td class="in-short"><input type="text" inputmode="numeric" pattern="\d+\.?\d?\d?" name="free-shipping" class="free-shipping" value="0" style="width: 100%" onkeyup="calculate(this)"></td>
             </tr>
             <tr>
-                <td>Total</td>
-                <td class="total"></td>
+                <td class="in-long">Total</td>
+                <td class="total in-short"></td>
             </tr>
         </table>
     </div>
